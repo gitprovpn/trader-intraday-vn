@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PaperTrade VN — Intraday T0 Simulator</title>
+  <meta name="description" content="Cloudflare Pages one-page intraday paper trading simulator for Vietnam stocks" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar hud-panel">
+      <div class="brand">
+        <div class="brand__dot"></div>
+        <div>
+          <div class="brand__title">PAPERTRADE VN</div>
+          <div class="brand__sub">Intraday paper trading · VN market · DCA engine</div>
+        </div>
+      </div>
+      <div class="topbar__actions">
+        <button id="btnStartStop" class="btn btn--primary">Pause</button>
+        <button id="btnReset" class="btn">Reset</button>
+      </div>
+    </header>
+
+    <section class="metrics-grid">
+      <div class="metric hud-panel"><span>SESSION PNL</span><strong id="metricSessionPnl">+0</strong></div>
+      <div class="metric hud-panel"><span>REALIZED</span><strong id="metricRealized">0</strong></div>
+      <div class="metric hud-panel"><span>UNREALIZED</span><strong id="metricUnrealized">0</strong></div>
+      <div class="metric hud-panel"><span>WIN RATE</span><strong id="metricWinRate">0%</strong></div>
+      <div class="metric hud-panel"><span>FILLS</span><strong id="metricFills">0</strong></div>
+      <div class="metric hud-panel"><span>ACTIVE</span><strong id="metricActive">SSI</strong></div>
+      <div class="metric hud-panel"><span>DATA</span><strong id="metricFeedMode">BOOTING</strong></div>
+      <div class="metric hud-panel"><span>STATUS</span><strong id="metricStatus">LIVE</strong></div>
+    </section>
+
+    <main class="main-grid">
+      <section class="panel hud-panel panel--tape">
+        <div class="panel__title">FILL TAPE / STRATEGY LOG</div>
+        <div id="tape" class="tape"></div>
+      </section>
+
+      <section class="column-mid">
+        <section class="panel hud-panel">
+          <div class="panel__title">WATCHLIST / FLOW</div>
+          <div id="watchlist" class="watchlist"></div>
+        </section>
+
+        <section class="panel hud-panel">
+          <div class="panel__title">ORDER BOOK</div>
+          <div class="spread-line">
+            <div>POST BID <span id="postBid">0</span></div>
+            <div>SPREAD <span id="spreadText">0</span></div>
+            <div>POST ASK <span id="postAsk">0</span></div>
+          </div>
+          <div id="orderBook" class="order-book"></div>
+        </section>
+
+        <section class="panel hud-panel">
+          <div class="panel__title">CONTROL PANEL</div>
+          <div class="controls-grid">
+            <label>Symbol
+              <select id="symbolSelect"></select>
+            </label>
+            <label>Start cash
+              <input id="inputCash" type="number" value="100000000" step="1000000" />
+            </label>
+            <label>DCA size
+              <input id="inputDcaSize" type="number" value="5000000" step="100000" />
+            </label>
+            <label>Take profit %
+              <input id="inputTakeProfit" type="number" value="1.6" step="0.1" />
+            </label>
+            <label>Cut loss %
+              <input id="inputCutLoss" type="number" value="1.2" step="0.1" />
+            </label>
+            <label>Fee % / side
+              <input id="inputFee" type="number" value="0.15" step="0.01" />
+            </label>
+            <label>Sell tax %
+              <input id="inputTax" type="number" value="0.10" step="0.01" />
+            </label>
+            <label>Sentiment
+              <select id="inputSentiment">
+                <option value="-1">Bearish</option>
+                <option value="0" selected>Neutral</option>
+                <option value="1">Bullish</option>
+              </select>
+            </label>
+          </div>
+          <div class="control-actions">
+            <button id="btnBuy" class="btn btn--buy">Manual Buy</button>
+            <button id="btnSell" class="btn btn--sell">Manual Sell</button>
+            <button id="btnApply" class="btn">Apply Config</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="column-right">
+        <section class="panel hud-panel panel--curve">
+          <div class="panel__title">PNL CURVE / LIVE</div>
+          <svg id="curveSvg" class="curve-svg" viewBox="0 0 420 300" preserveAspectRatio="none"></svg>
+        </section>
+
+        <section class="panel hud-panel">
+          <div class="panel__title">POSITION / INVENTORY</div>
+          <div class="kv-list">
+            <div><span>Cash</span><strong id="posCash">0</strong></div>
+            <div><span>Qty</span><strong id="posQty">0</strong></div>
+            <div><span>Avg price</span><strong id="posAvg">0</strong></div>
+            <div><span>Mark</span><strong id="posMark">0</strong></div>
+            <div><span>Fees</span><strong id="posFees">0</strong></div>
+            <div><span>Tax</span><strong id="posTax">0</strong></div>
+            <div><span>Equity</span><strong id="posEquity">0</strong></div>
+            <div><span>Spread capture</span><strong id="posSpreadCapture">0</strong></div>
+          </div>
+        </section>
+
+        <section class="panel hud-panel">
+          <div class="panel__title">FORMULA / ENGINE</div>
+          <div class="formula-list">
+            <div>mode = intraday paper trading</div>
+            <div>entry = pressure + mean reversion</div>
+            <div>add = DCA when drawdown exceeds threshold</div>
+            <div>exit = TP / CL / scalp unwind</div>
+            <div>pnl = realized + unrealized - fees - tax</div>
+            <div id="engineLine">γ risk = 0.10 | σ live = 0.00</div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
